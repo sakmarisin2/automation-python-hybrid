@@ -25,15 +25,16 @@ class JSONSerializer(Serializer):
             return payload
 
         elif isinstance(payload, list):
-            paylaod = [i.model_dump(by_alias=True, exclude=self.exclude_none) for i in payload]
-            return json.dumps(paylaod)
+            payload = [
+                i.model_dump(by_alias=True, exclude=self.exclude_none) for i in payload
+            ]
+            return json.dumps(payload)
 
         elif isinstance(payload, dict):
             return json.dumps(payload)
 
         dict_payload = payload.model_dump(by_alias=True, exclude=self.exclude_none)
         return json.dumps(dict_payload)
-
 
     def deserialize(self, response_data: httpx.Response, schema):
         if not response_data.text:
@@ -55,8 +56,9 @@ class FormDataSerializer(Serializer):
     def deserialize(self, response_data, schema):
         pass
 
+
 class JsonWithNullValuesSerializer(JSONSerializer):
-    exlude_none = False
+    exclude_none = False
 
 
 _mapper = {
@@ -65,6 +67,7 @@ _mapper = {
     DataType.JSON_WITH_NULL.value: JsonWithNullValuesSerializer,
 }
 
+
 def get_serializer(data_type: str):
-     Serializer = _mapper.get(data_type)
-     return Serializer()
+    Serializer = _mapper.get(data_type)
+    return Serializer()

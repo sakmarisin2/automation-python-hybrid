@@ -38,3 +38,5 @@ Thumbs.db
 
 # --- Pre-commit & Formatting ---
 .pre-commit-cache/
+
+.env.local
