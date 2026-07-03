@@ -1,0 +1,40 @@
+# --- Python Environment & Dependencies ---
+.venv/
+venv/
+ENV/
+env/
+.poetry/
+poetry.lock
+Pipfile
+Pipfile.lock
+
+# --- Pytest & Test Execution ---
+.pytest_cache/
+.cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Allure Test Reports ---
+allure-results/
+allure-report/
+
+# --- Playwright Visuals & Debugging ---
+test-results/
+playwright-report/
+.playwright-artifacts/
+blob-report/
+
+# --- IDEs & Code Editors ---
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# --- System & Operating System Files ---
+.DS_Store
+Thumbs.db
+
+# --- Pre-commit & Formatting ---
+.pre-commit-cache/
