@@ -26,7 +26,7 @@ class Builder:
         self._current_data_type: str = DataType.JSON.value
 
     def get_url(self, endpoint: str) -> str:
-        return self.config.api_base_url + endpoint
+        return self.config.base_url + endpoint
 
     def get_headers(self) -> Dict[str, str]:
         return {**self.headers}
