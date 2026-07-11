@@ -42,6 +42,7 @@ jobs:
         curl -sSL https://install.python-poetry.org | python3 -
         export PATH="$HOME/.local/bin:$PATH"
         poetry install --no-interaction --no-root
+        poetry run playwright install
 
     - name: Execute Tests
       if: always()
