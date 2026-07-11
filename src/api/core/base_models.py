@@ -4,11 +4,6 @@ from typing import Any
 
 
 @dataclass
-class BaseConfig:
-    api_base_url: str
-
-
-@dataclass
 class RequestData:
     uri: str
     params: dict

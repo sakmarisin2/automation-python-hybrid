@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import ConfigDict, Field, BaseModel
 
 
 class Room(BaseModel):

@@ -4,7 +4,7 @@ import httpx
 import pytest
 from dotenv import load_dotenv, find_dotenv
 
-from src.api.core.base_models import BaseConfig
+from src.config.base import BaseConfig
 
 
 @pytest.fixture(scope="session")
