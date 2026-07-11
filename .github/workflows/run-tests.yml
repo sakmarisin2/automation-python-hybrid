@@ -32,8 +32,6 @@ jobs:
 
     - name: Set up Python
       uses: actions/setup-python@v5
-      with:
-        python-profile: '3.10'
 
     - name: Set up Java
       uses: actions/setup-java@v4
