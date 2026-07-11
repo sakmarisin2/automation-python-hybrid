@@ -1,8 +1,10 @@
+import allure
 import pytest
 
 from src.web.pages.main_page import MainPage
 
 
+@allure.epic("Web interface")
 @pytest.mark.regression
 @pytest.mark.ui
 def test_main_page_header(page_factory):

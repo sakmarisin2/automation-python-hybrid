@@ -1,6 +1,8 @@
+import allure
 import pytest
 
 
+@allure.epic("Api interface")
 @pytest.mark.regression
 @pytest.mark.api
 def test_get_automation_site_room(automation_service):
