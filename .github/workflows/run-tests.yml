@@ -76,6 +76,21 @@ jobs:
         allure_history: allure-history
         keep_reports: 20
 
+    - name: Ensure Deployment Directory Exists
+      if: always()
+      run: |
+        mkdir -p allure-history
+        if [ -z "$(ls -A allure-history)" ]; then
+        echo "<h1>Initial Allure Report Generation Placeholder</h1>" > allure-history/index.html
+        fi
+
+        - name: Deploy to GitHub Pages
+          uses: peaceiris/actions-gh-pages@v4
+          if: always()
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: allure-history
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4
       if: always()
