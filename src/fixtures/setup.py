@@ -34,7 +34,7 @@ def base_config():
 
     clean_url = base_url.rstrip("/")
 
-    return BaseConfig(api_base_url=clean_url)
+    return BaseConfig(base_url=clean_url)
 
 
 @pytest.fixture(scope="function")
