@@ -1,0 +1,73 @@
+name: Test Automation & Allure Report
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      test_marker:
+        description: 'Choose which test suite marker to run'
+        required: true
+        default: 'regression'
+        type: choice
+        options:
+        - regression
+        - api
+        - smoke
+
+permissions:
+  contents: write
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-profile: '3.10'
+
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Install Poetry & Dependencies
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+        export PATH="$HOME/.local/bin:$PATH"
+        poetry install --no-interaction --no-root
+
+    - name: Execute Tests
+      if: always()
+      run: |
+        export PATH="$HOME/.local/bin:$PATH"
+        poetry run pytest -m "${{ github.event.inputs.test_marker || 'regression' }}" --alluredir=allure-results
+
+    - name: Get Allure History
+      uses: actions/checkout@v4
+      if: always()
+      continue-on-error: true
+      with:
+        ref: gh-pages
+        path: gh-pages
+
+    - name: Build Allure Report
+      uses: simple-elf/allure-report-action@master
+      if: always()
+      with:
+        allure_results: allure-results
+        allure_history: allure-history
+        keep_reports: 20
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      if: always()
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: allure-history
