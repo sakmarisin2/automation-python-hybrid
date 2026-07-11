@@ -17,6 +17,7 @@ on:
 
 permissions:
   contents: write
+
 env:
   CONSTANT_BASE_URL: "https://automationintesting.online"
   PYTHON_VERSION: "3.10"
@@ -32,12 +33,14 @@ jobs:
 
     - name: Set up Python
       uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
 
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: ${{ env.JAVA_VERSION }}
 
     - name: Install Poetry & Dependencies
       run: |
@@ -48,9 +51,7 @@ jobs:
 
     - name: Create .env.local File
       run: |
-         touch .env.local
-        
-        # 1. Pulling from your file constants up top
+        touch .env.local
         echo "BASE_URL=${{ env.CONSTANT_BASE_URL }}" >> .env.local
 
     - name: Execute Tests
