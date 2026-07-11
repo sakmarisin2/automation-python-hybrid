@@ -17,6 +17,10 @@ on:
 
 permissions:
   contents: write
+env:
+  CONSTANT_BASE_URL: "https://automationintesting.online"
+  PYTHON_VERSION: "3.10"
+  JAVA_VERSION: "17"
 
 jobs:
   run-tests:
@@ -43,6 +47,13 @@ jobs:
         export PATH="$HOME/.local/bin:$PATH"
         poetry install --no-interaction --no-root
         poetry run playwright install
+
+    - name: Create .env.local File
+      run: |
+         touch .env.local
+        
+        # 1. Pulling from your file constants up top
+        echo "BASE_URL=${{ env.CONSTANT_BASE_URL }}" >> .env.local
 
     - name: Execute Tests
       if: always()
