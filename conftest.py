@@ -1,58 +1,74 @@
+import configparser
+import os
 from typing import Any, Generator
 
 import pytest
 from playwright.sync_api import sync_playwright, Browser, Page, ViewportSize
 
 
+def _get_ini_markers() -> list[str]:
+    markers = []
+    ini_path = os.path.join(os.path.dirname(__file__), "pytest.ini")
+
+    if not os.path.exists(ini_path):
+        return markers
+
+    config = configparser.ConfigParser()
+    try:
+        config.read(ini_path)
+        if "pytest" in config and "markers" in config["pytest"]:
+            marker_lines = config["pytest"]["markers"].splitlines()
+            for line in marker_lines:
+                if ":" in line:
+                    marker_name = line.split(":")[0].strip()
+                    markers.append(marker_name)
+    except Exception:
+        pass
+    return markers
+
+
 def pytest_addoption(parser):
-    parser.addoption(
-        "--api", action="store_true", default=False, help="Run only API tests"
-    )
-    parser.addoption(
-        "--ui", action="store_true", default=False, help="Run only UI tests"
-    )
-    parser.addoption(
-        "--regression",
-        action="store_true",
-        default=False,
-        help="Run regression suite tests",
-    )
+    available_markers = _get_ini_markers()
+
+    for marker in available_markers:
+        parser.addoption(
+            f"--{marker}",
+            action="store_true",
+            default=False,
+            help=f"Run only tests marked as {marker}",
+        )
 
 
 def pytest_collection_modifyitems(config, items):
-    is_api_active = config.getoption("--api")
-    is_ui_active = config.getoption("--ui")
-    is_regression_active = config.getoption("--regression")
+    available_markers = _get_ini_markers()
+
+    active_flags = [
+        m for m in available_markers if config.getoption(f"--{m}", default=False)
+    ]
 
     selected_items = []
     deselected_items = []
 
     for item in items:
-        has_api_marker = item.get_closest_marker("api") is not None
-        has_ui_marker = item.get_closest_marker("ui") is not None
-        has_regression_marker = item.get_closest_marker("regression") is not None
-
-        if is_regression_active:
-            if has_regression_marker:
-                selected_items.append(item)
-            else:
-                deselected_items.append(item)
-        elif is_api_active:
-            if has_api_marker:
-                selected_items.append(item)
-            else:
-                deselected_items.append(item)
-        elif is_ui_active:
-            if has_ui_marker:
+        if active_flags:
+            match = all(
+                item.get_closest_marker(flag) is not None for flag in active_flags
+            )
+            if match:
                 selected_items.append(item)
             else:
                 deselected_items.append(item)
 
         else:
-            if not has_api_marker:
+            has_native_marker_filter = config.getoption("-m") != ""
+
+            if has_native_marker_filter:
                 selected_items.append(item)
             else:
-                deselected_items.append(item)
+                if item.get_closest_marker("api") is None:
+                    selected_items.append(item)
+                else:
+                    deselected_items.append(item)
 
     config.hook.pytest_deselected(items=deselected_items)
     items[:] = selected_items
